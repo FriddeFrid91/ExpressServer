@@ -1,0 +1,18 @@
+body {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    max-width: 800px;
+    margin:  20px;
+    background-color: salmon;
+}
+
+header, footer, body {
+    border-style: dotted;
+    border-color: black;
+}
+
+h1 {
+    border-bottom: 4px double #aaa;
+}
+h2 {
+    border-bottom: 1px solid #ccc;
+}

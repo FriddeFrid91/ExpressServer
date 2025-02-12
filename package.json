@@ -1,0 +1,32 @@
+{
+  "name": "hello",
+  "version": "1.0.0",
+  "description": "Exercise for the backend course.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "jsdoc": "npx jsdoc -c jsdoc.config.json",
+    "test": "npx cross-env NODE_ENV=test npx mocha test/**/*.test.js",
+    "eslint": "npx eslint .",
+    "eslint:fix": "npx eslint . --fix",
+    "start": "node --env-file=.env app",
+    "dev": "npx nodemon  --env-file=.env app",
+    "clean": "rm -rf node_modules/ package-log.json"
+  },
+  "author": "Frida Johannesson",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.0.1",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "chai": "^5.1.2",
+    "cross-env": "^7.0.3",
+    "eslint": "^9.20.1",
+    "jsdoc": "^4.0.4",
+    "mocha": "^11.1.0",
+    "nodemon": "^3.1.9",
+    "rimraf": "^6.0.1",
+    "supertest": "^7.0.0"
+  }
+}
