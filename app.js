@@ -1,7 +1,17 @@
-import { app } from './src/express.js'
+import 'dotenv/config'; // ✅ Laddar .env automatiskt
+import databaseService from "./src/service/DatabaseService.js"
+import menu from "./src/Menu.js"
 
-const port = process.env.PORT || 3000
 
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`)
-})
+// Connect to the database
+await databaseService.connect()
+
+// Do the menu loop
+do {
+  menu.show()
+} while (await menu.handleInput())
+
+// End the application
+await databaseService.closeConnection()
+process.exit(0)
+

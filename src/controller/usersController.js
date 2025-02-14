@@ -1,112 +1,95 @@
-let users = []
+import usersModel from "../model/UsersModel.js"
+import outputHandler from "../view/OutputHandler.js"
 
 /**
- * Controller object for handling user-related operations.
+ * Controller to perform CRUD fo rhte users collection.
+ * @class
  */
-export const controller = {}
-
-/**
- * Middleware to verify the user ID.
- * @param {Request} req - The request object.
- * @param {Response} res - The response object.
- * @param {function} next - The next middleware function.
- * @param {number} id - The user ID.
- */
-controller.verifyUserId = (req, res, next, id) => {
-  const userId = parseInt(id)
-  if (!Number.isInteger(userId)) {
-    return res.status(400).json({ error: 'Invalid ID format' })
+class UsersController {
+/**Show a single user. */
+/* @async
+*/
+async showSingleUser(id) {
+  try {
+    const user = await usersModel.getSingleUser(id);
+    if (user) {
+      outputHandler.showUsers([user]);
+    } else {
+      outputHandler.showError(`❌ No user found with ID: ${id}`);
+    }
   }
-  req.userId = userId
-  next()
-}
-
-/**
- * Get all users.
- * @param {Request} req - The request object.
- * @param {Response} res - The response object.
- */
-controller.getUsers = (req, res) => {
-  res.json(users)
-}
-
-/**
- * Create a new user.
- * @param {Request} req - The request object.
- * @param {Response} res - The response object.
- */
-controller.createUser = (req, res) => {
-  const user = req.body
-  // Validering av användardata kan läggas till här
-  users.push(user)
-  res.status(201).json(user)
-}
-
-/**
- * Get a user by ID.
- * @param {Request} req - The request object.
- * @param {Response} res - The response object.
- */
-controller.getUserById = (req, res) => {
-  const user = users.find(u => u.id === req.userId)
-  if (user) {
-    res.json(user)
-  } else {
-    res.status(404).json({ error: 'User not found' })
+    catch (error) {
+      outputHandler.showError("❌ Could not fetch user.", error);
+    }
   }
-}
 
-/**
- * Update a user by ID.
- * @param {Request} req - The request object.
- * @param {Response} res - The response object.
- */
-controller.updateUser = (req, res) => {
-  const user = users.find(u => u.id === req.userId)
-  if (user) {
-    Object.assign(user, req.body)
-    res.json(user)
-  } else {
-    res.status(404).json({ error: 'User not found' })
+
+  /**
+   * Show all users by fetching data from the model and displaying it via the output handler.
+   * @async
+   */
+  async showUsers() {
+    try {
+      const users = await usersModel.getAllUsers()
+      outputHandler.showUsers(users)
+    } catch (error) {
+      outputHandler.showError("Could not fetch users.")
+    }
   }
-}
 
-/**
- * Partially update a user by ID.
- * @param {Request} req - The request object.
- * @param {Response} res - The response object.
- */
-controller.partialUpdateUser = (req, res) => {
-  const user = users.find(u => u.id === req.userId)
-  if (user) {
-    Object.assign(user, req.body)
-    res.json(user)
-  } else {
-    res.status(404).json({ error: 'User not found' })
+  /**
+   * Add a new user to the database.
+   * @async
+   * @param {string} name - The name of the user.
+   * @param {string} email - The email of the user.
+   * @param {string} password - The password for the user.
+   */
+  async addUser(name, email, password) {
+    try {
+      const id = await usersModel.addUser(name, email, password)
+      outputHandler.showSuccess(`New user added with ID: ${id}`)
+    } catch (error) {
+      outputHandler.showError("Could not add user.", error)
+    }
   }
-}
 
-/**
- * Delete a user by ID.
- * @param {Request} req - The request object.
- * @param {Response} res - The response object.
- */
-controller.deleteUser = (req, res) => {
-  const index = users.findIndex(u => u.id === req.userId)
-  if (index !== -1) {
-    users.splice(index, 1)
-    res.json({ result: 'User deleted' })
-  } else {
-    res.status(404).json({ error: 'User not found' })
+  /**
+   * Update an existing user in the database.
+   * @async
+   * @param {number} id - The ID of the user to update.
+   * @param {string} name - The new name of the user.
+   * @param {string} email - The new email of the user.
+   */
+  async updateUser(id, name, email) {
+    try {
+      const success = await usersModel.updateUser(id, name, email)
+      if (success) {
+        outputHandler.showSuccess(`User with ID ${id} updated.`)
+      } else {
+        outputHandler.showError(`No user found with ID ${id}.`)
+      }
+    } catch (error) {
+      outputHandler.showError("Could not update user.", error)
+    }
+  }
+
+  /**
+   * Delete a user from the database.
+   * @async
+   * @param {number} id - The ID of the user to delete.
+   */
+  async deleteUser(id) {
+    try {
+      const success = await usersModel.deleteUser(id)
+      if (success) {
+        outputHandler.showSuccess(`User with ID ${id} deleted.`)
+      } else {
+        outputHandler.showError(`No user found with ID ${id}.`)
+      }
+    } catch (error) {
+      outputHandler.showError("Could not delete user.", error)
+    }
   }
 }
 
-/**
- * Delete the users collection.
- * @param {Request} req - The request object.
- * @param {Response} res - The response object.
- */
-controller.deleteUsers = (req, res) => {
-  users = []
-  res.json({ result: 'Users deleted' })
-}
+export default new UsersController()
